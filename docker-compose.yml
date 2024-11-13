@@ -1,0 +1,25 @@
+#services:
+#  db:
+#    image: mysql:latest
+#    container_name: mysql-container
+#    environment:
+#      MYSQL_ROOT_PASSWORD: RytSrtd172100!
+#      MYSQL_DATABASE: usermanagement
+#    ports:
+#      - "3308:3306"
+#    networks:
+#      - my-network
+#
+#  app:
+#    build: .
+#    container_name: my-app
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - db
+#    networks:
+#      - my-network
+#
+#networks:
+#  my-network:
+#    driver: bridge
