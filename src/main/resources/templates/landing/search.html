@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-gray-100">
+<header>
+    <div class="fixed overflow-hidden top-0 h-16 w-full bg-white shadow-md z-20">
+        <div class="w-3/4 py-2 flex justify-between items-center m-auto">
+            <div>
+                <i class="fa-solid fa-globe text-4xl pt-2 text-gray-800"></i>
+            </div>
+            <div class="mt-2 flex flex-row">
+                <a th:href="@{/home}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Home</a>
+                <a th:href="@{/profession}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Profession</a>
+                <a th:href="@{/events}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Events</a>
+                <a th:href="@{/contact}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">ContactUs</a>
+                <p class="font-bold text-md pointer-events-none mr-4">|</p>
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button type="submit" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" sec:authorize="isAuthenticated()" >Logout</button>
+                </form>
+
+                <a th:href="@{/admins}" class="mr-2 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" sec:authorize="hasAnyRole('SuperAdmin', 'Admin')">Accounts</a>
+                <a th:href="@{/profile}" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white"sec:authorize="isAuthenticated()">Profile</a>
+
+                <a th:href="@{/user/register}" sec:authorize="!isAuthenticated()" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" >Register</a>
+
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" >Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="dashboard fixed flex overflow-y-auto h-screen w-full">
+        <div class=" pt-16 w-1/5 text-gray-800 flex sticky top-0 overflow-hidden ml-48">
+            <div class="flex flex-col w-full">
+
+                <form th:action="@{/events/search}">
+                    <input name="query" type="search" aria-label="Search" id="input-box" class="py-2 px-2 w-3/4 ml-8 mb-6 bg-white rounded-3xl border border-gray-100 shadow-md mt-5 mr-2" placeholder="Search people">
+                </form>
+
+                <a class="py-4 pl-10 text-md transform hover:bg-gradient-to-r hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Project</a>
+                <a class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Professional</a>
+                <a class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Business</a>
+                <a class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Celebration</a>
+                <a class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Other</a>
+                <div class="w-3/4 border border-gray-300 ml-8"></div>
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button sec:authorize="isAuthenticated()" class="py-4 text-left w-full pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Logout</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Login</a>
+
+            </div>
+        </div>
+        <div class="content inline-block bg-gray-100 w-2/4 mx-auto mt-20">
+            <div class="flex justify-between mx-20 mb-10">
+                <a th:href="@{/events}" class="my-auto cursor-pointer py-3 px-4 transform hover:bg-gray-300 rounded-full duration-300">
+                    <i class="fa-solid fa-arrow-left font-semibold text-gray-800"></i>
+                </a>
+                <h1 class="text-2xl font-semibold text-gray-800">People you may know</h1>
+            </div>
+            <div th:each="admin:${admin}" class="mb-4">
+                <div>
+                    <div class="h-fit pt-4 px-4 w-4/5 flex flex-col bg-white mx-auto rounded-2xl shadow-md">
+                        <div class="flex flex-row justify-between w-full mb-2">
+                            <div class="flex flex-row">
+                                <div class="bg-gray-200 rounded-full h-16 w-16 mr-4 overflow-hidden">
+                                    <img class="flex h-full m-auto" th:src="@{'data:image/jpeg;base64,'+${admin.getImageDataBase64()}}">
+                                </div>
+                                <div class="h-full my-auto">
+                                    <h1 th:text="${admin.name}" class="text-gray-800 text-lg font-semibold"></h1>
+                                    <p th:text="${admin.email}" class="text-gray-600 text-md"></p>
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fa-solid fa-ellipsis text-2xl text-gray-700 rounded-full transform hover:bg-gray-200 p-2 duration-300"></i>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="flex flex-row justify-around">
+                            <a th:href="@{/user/user(email=${admin.email})}" class="text-sm text-gray-500 cursor-pointer transform font-semibold py-2 my-2 px-16 rounded-lg hover:bg-gray-200 duration-200">Visit profile</a>
+                            <a class="text-sm text-gray-500 cursor-pointer transform font-semibold py-2 my-2 px-16 rounded-lg hover:bg-gray-200 duration-200">Contact</a>
+                            <a class="text-sm text-gray-500 cursor-pointer transform font-semibold py-2 my-2 px-16 rounded-lg hover:bg-gray-200 duration-200">Copy Link</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-1/4 flex flex-col gap-8 h-full sticky top-0 overflow-hidden pt-24 mr-36">
+            <div class="bg-white w-9/12 h-96 rounded-xl shadow-md text-right p-10">
+                <h1>Contact</h1>
+            </div>
+            <div class="bg-white w-9/12 h-96 rounded-xl shadow-md text-right p-10">
+                <h1>Calendar</h1>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="https://kit.fontawesome.com/6730680f00.js" crossorigin="anonymous"></script>
+</body>
+</html>

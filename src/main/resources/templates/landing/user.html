@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile Account</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div class="h-16 w-full bg-white shadow-md absolute">
+        <div class="w-3/4 py-2 flex justify-between items-center m-auto">
+            <div class="flex flex-row">
+                <i class="fa-solid fa-globe text-4xl pt-2 text-gray-800"></i>
+                <form th:action="@{/events/search}">
+                    <input name="query" type="search" aria-label="Search" id="input-box" class="py-2 mt-1 ml-4 w-96 px-2 bg-white rounded-3xl border-2 border-gray-400 shadow-md" placeholder="Search people">
+                </form>
+                <div class="result ml-14 pl-2 absolute h-fit w-40 bg-gray-900 mt-16 w-80 z-50 text-gray-100 text-md rounded-md shadow-md"></div>
+            </div>
+            <div class="mt-2 flex flex-row">
+                <a th:href="@{/home}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Home</a>
+                <a th:href="@{/profession}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Profession</a>
+                <a th:href="@{/events}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Events</a>
+                <a th:href="@{/contact}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">ContactUs</a>
+                <p class="font-bold text-md pointer-events-none mr-4">|</p>
+
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button type="submit" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" sec:authorize="isAuthenticated()" >Logout</button>
+                </form>
+
+                <a th:href="@{/admins}" class="mr-2 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" sec:authorize="hasAnyRole('SuperAdmin', 'Admin')">Accounts</a>
+
+                <a th:href="@{/profile}" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white">Profile</a>
+
+                <a th:href="@{/user/register}" sec:authorize="!isAuthenticated()" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" >Register</a>
+
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" >Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="bg-white">
+    <section>
+        <div class="h-screen flex flex-col justify-between">
+            <div class="h-1/3 flex flex-row overflow-hidden bg-gray-200 mx-4 shadow-md rounded-lg">
+                <img id="viewBp" class="cursor-pointer w-full m-auto w-auto" th:src="@{'data:image/jpeg;base64,'+${admins.getImageDataBase644()}}"/>
+            </div>
+
+            <div class="w-3/4 mx-auto -mt-52 flex flex-row">
+                <div class="h-64 w-64 bg-white p-2 rounded-full shadow-lg z-40">
+                    <div class="h-full bg-gray-300 rounded-full overflow-hidden">
+                        <img id="viewPp" class="cursor-pointer h-full m-auto" th:src="@{'data:image/jpeg;base64,'+${admins.getImageDataBase64()}}"/>
+                    </div>
+                </div>
+                <div class="my-auto">
+                    <h1 th:text="${admins.name}" class="text-3xl font-semibold text-gray-800 ml-4 mt-36"></h1>
+                </div>
+            </div>
+            <div class="border border-gray-300 w-5/6 mx-auto"></div>
+
+            <div class="bg-gray-200 mx-4 h-1/2 flex flex-row">
+                <div class="w-5/6 py-4 mx-auto flex flex-row">
+                    <div class="w-1/4 mx-4 h-full flex flex-col gap-4">
+                        <!--                        Bio-->
+                        <div class="bg-white rounded-3xl shadow-md h-1/2 p-4">
+                            <div class="flex flex-row justify-between">
+                                <h1 class="text-gray-800 text-3xl font-semibold">Bio</h1>
+                            </div>
+                            <hr>
+                            <div class="mt-4 text-gray-800 text-md font-semibold">
+                                <p th:text="${#strings.abbreviate(admins.bio,10)}"></p>
+                                <div class="flex justify-end -mt-6 mr-8">
+                                    <a id="expandBio" class="underline cursor-pointer">See more</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--                        Contact-->
+                        <div class="bg-white rounded-3xl shadow-md h-1/2 p-4">
+                            <div class="flex flex-row justify-between">
+                                <h1 class="text-gray-800 text-3xl font-semibold">Contacts</h1>
+                            </div>
+                            <hr>
+                            <div class="flex flex-col gap-4 mt-6">
+                                <p class="text-gray-800 text-md font-semibold" th:text="${admins.email}"></p>
+                                <p class="text-gray-800 text-md font-semibold" th:text="${admins.contactNumber}"></p>
+                                <p class="text-gray-800 text-md font-semibold" th:text="${admins.address}"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-1/2 mx-4 h-full bg-white rounded-3xl shadow-md p-4">
+                        <div class="flex flex-row justify-between">
+                            <h1 class="text-gray-800 text-3xl font-semibold">Experiences</h1>
+                        </div>
+                        <hr>
+                        <div class="flex flex-row justify-between text-white text-lg font-bold">
+                            <h1>Intellyx IT Solutions</h1>
+                            <p>2023</p>
+                        </div>
+                        <p class="text-gray-800 pb-4 font-semibold">System Developer - On-the-Job Training</p>
+                        <ul class="list-disc ml-6 text-gray-800">
+                            <li>Developed a Point of Sale (POS) system implementing CRUD operations (Create, Read, Update, Delete) using Java.</li>
+                            <li>Applied skills acquired during lectures to design and build a functional system as specified by the assigned company.</li>
+                            <li>Collaborated with a team to complete the project within a 5-day period.</li>
+                            <li>Gained experience in using survey instruments in leveling and conducted seabed sampling and investigation, understanding
+                                the procedures and materials involved.</li>
+                            <li>Completed and presented a final output project involving Hydrographic Survey and Cost Estimation, including georeferencing
+                                and data collection from various divisions with feedback from NAMRIA officials.
+                            </li>
+                            <li>Successfully presented the final system to company representatives, demonstrating the effective use of Java in real-world applications.</li>
+                        </ul>
+                    </div>
+
+                    <div class="w-1/4 mx-4 h-full bg-white rounded-3xl shadow-md p-4">
+                        <div class="flex flex-row justify-between">
+                            <h1 class="text-gray-800 text-3xl font-semibold">Skills</h1>
+                        </div>
+                        <hr>
+                        <h1 class="text-lg font-semibold text-gray-800 pb-4 mt-4">Technical Skills</h1>
+                        <ul class="text-md text-gray-800">
+                            <li>React, Laravel, Spring Boot, NodeJs, MongoDb</li>
+                            <li>C++, Java, PHP, MySQL, Htlml5, and CSS</li>
+                            <li>Website and System Development</li>
+                            <li>Word Processing Softwares</li>
+                            <li>Website Hosting</li>
+                            <li>Web Designing</li>
+                            <li>Photoshop, Autocad, and Adobe Premier</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--    partisian divs-->
+    <section id="bgBi" class="hidden bg-opacity-80 bg-gray-800 absolute h-full w-full transform top-0 left-0 -translate-x-1 -translate-y-1 m-auto ease-in-out duration-300 z-50">
+        <div id="bioInfo" class="overflow-hidden hidden scale-0 absolute pl-8 pb-8 h-fit w-1/4 bg-white border border-gray-200 shadow-xl rounded-3xl transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-auto ease-in-out duration-300">
+            <div class="flex justify-end">
+                <a id="exitBioInfo" class="cursor-pointer top-2 right-2 px-4 py-2"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+            <div class="flex flex-row justify-between">
+                <h1 class="text-gray-800 text-3xl font-semibold">Bio</h1>
+            </div>
+
+            <div class=" text-gray-800 text-md font-semibold pr-8">
+                <hr>
+                <p th:text="${admins.bio}"></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="bgDp" class="hidden bg-opacity-80 bg-gray-800 absolute h-full w-full transform top-0 left-0 -translate-x-1 -translate-y-1 m-auto ease-in-out duration-300 z-50">
+        <div id="displayPp" class="hidden scale-0 absolute h-3/4 w-fit bg-gray-100 shadow-xl transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-auto ease-in-out duration-100 z-50">
+            <div class="absolute w-full">
+                <div class="flex justify-end">
+                    <a id="exitDisplayPp" class="cursor-pointer top-2 right-2 px-4 py-2 text-2xl font-bold"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </div>
+            <img class="h-full m-auto" th:src="@{'data:image/jpeg;base64,'+${admins.getImageDataBase64()}}"/>
+        </div>
+    </section>
+
+    <section id="bgDbp" class="hidden bg-opacity-80 bg-gray-800 absolute h-full w-full transform top-0 left-0 -translate-x-1 -translate-y-1 m-auto ease-in-out duration-300 z-50">
+        <div id="displayBp" class="hidden scale-0 absolute w-3/4 h-fit max-h-3/4 bg-gray-100 shadow-xl transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-auto ease-in-out duration-100 z-50">
+            <div class="absolute w-full">
+                <div class="flex justify-end">
+                    <a id="exitDisplayBp" class="cursor-pointer top-2 right-2 px-4 py-2 text-2xl font-bold"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </div>
+            <img class="" th:src="@{'data:image/jpeg;base64,'+${admins.getImageDataBase644()}}"/>
+        </div>
+    </section>
+
+</main>
+
+<script th:inline="javascript">
+    const list = /*[[${list}]]*/ '[]';
+    const parsedList = JSON.parse(list);
+    console.log("parsedList: ", parsedList);
+
+    for (let i in parsedList) {
+        console.log("name: " + parsedList[i]);
+    }
+
+    const resultBox = document.querySelector(".result");
+    const inputBox = document.getElementById("input-box");
+
+    inputBox.onkeyup = function () {
+        let results = [];
+        let input = inputBox.value;
+        if (input.length && parsedList) {
+            results = parsedList.filter((name) => {
+                return name.toLowerCase().includes(input.toLowerCase());
+            });
+            console.log(results);
+        }
+        display(results);
+    };
+    function display(result) {
+        const content = result.map((name) => {
+            return "<br><a href='/user/user?email=" + name + "'>" + name + "</a><br><br>";
+        }).join('');
+        resultBox.innerHTML = content;
+    }
+    //bio
+    const editBio = document.getElementById('editBio');
+    const editBtn = document.getElementById('bioBtn');
+
+    const exitBnt = document.getElementById('exitBnt');
+    const bgEdit = document.getElementById('bgEdit');
+    //contact
+    const editContact = document.getElementById('editContact');
+    const contactBtn = document.getElementById('contactBtn');
+
+    const exitContact = document.getElementById('exitContact');
+    const bgContact = document.getElementById('bgContact');
+
+    //profilePic
+    const editPp = document.getElementById('editPp');
+    const ppBtn = document.getElementById('ppBtn');
+
+    const exitPp = document.getElementById('exitPp');
+    const bgPp = document.getElementById('bgPp');
+
+    //backgroundPic
+    const editBp = document.getElementById('editBp');
+    const bpBtn = document.getElementById('bpBtn');
+
+    const exitBp = document.getElementById('exitBp');
+    const bgBp = document.getElementById('bgBp');
+
+    //expand
+    const bgBi = document.getElementById('bgBi');
+    const bioInfo = document.getElementById('bioInfo');
+    const exitBioInfo = document.getElementById('exitBioInfo');
+    const expandBio = document.getElementById('expandBio');
+
+    const viewPp = document.getElementById('viewPp');
+    const bgDp = document.getElementById('bgDp');
+    const displayPp = document.getElementById('displayPp');
+    const exitDisplayPp = document.getElementById('exitDisplayPp');
+
+    const viewBp = document.getElementById('viewBp');
+    const bgDbp = document.getElementById('bgDbp');
+    const displayBp = document.getElementById('displayBp');
+    const exitDisplayBp = document.getElementById('exitDisplayBp');
+
+
+    //expand
+    expandBio.addEventListener('click', () => {
+        bioInfo.classList.remove('hidden');
+        bgBi.classList.remove('hidden');
+        setTimeout(() => {
+            bioInfo.classList.remove('scale-0');
+            bioInfo.classList.add('scale-100');
+        }, 10);
+    })
+    exitBioInfo.addEventListener('click', () => {
+        setTimeout(() => {
+            bioInfo.classList.add('scale-0');
+            bioInfo.classList.remove('scale-100');
+            bgBi.classList.add('hidden');
+        }, 10);
+    })
+
+    //expand
+    viewPp.addEventListener('click', () => {
+        displayPp.classList.remove('hidden');
+        bgDp.classList.remove('hidden');
+        setTimeout(() => {
+            displayPp.classList.remove('scale-0');
+            displayPp.classList.add('scale-100');
+        }, 10);
+    })
+    exitDisplayPp.addEventListener('click', () => {
+        setTimeout(() => {
+            displayPp.classList.add('scale-0');
+            displayPp.classList.remove('scale-100');
+            bgDp.classList.add('hidden');
+        }, 10);
+    })
+
+    //expand
+    viewPp.addEventListener('click', () => {
+        displayPp.classList.remove('hidden');
+        setTimeout(() => {
+            displayPp.classList.remove('scale-0');
+            displayPp.classList.add('scale-100');
+        }, 10);
+    })
+    exitDisplayPp.addEventListener('click', () => {
+        setTimeout(() => {
+            displayPp.classList.add('scale-0');
+            displayPp.classList.remove('scale-100');
+        }, 10);
+    })
+
+    //expand
+    viewBp.addEventListener('click', () => {
+        displayBp.classList.remove('hidden');
+        bgDbp.classList.remove('hidden');
+        setTimeout(() => {
+            displayBp.classList.remove('scale-0');
+            displayBp.classList.add('scale-100');
+        }, 10);
+    })
+    exitDisplayBp.addEventListener('click', () => {
+        setTimeout(() => {
+            displayBp.classList.add('scale-0');
+            displayBp.classList.remove('scale-100');
+            bgDbp.classList.add('hidden');
+        }, 10);
+    })
+
+    //bio
+    editBtn.addEventListener('click', () => {
+        editBio.classList.remove('hidden');
+        bgEdit.classList.remove('hidden');
+        setTimeout(() => {
+            editBio.classList.remove('scale-0');
+            editBio.classList.add('scale-100');
+        }, 100);
+    })
+    exitBnt.addEventListener('click', () => {
+        bgEdit.classList.add('hidden');
+        setTimeout(() => {
+            editBio.classList.remove('scale-100');
+            editBio.classList.add('scale-0');
+        }, 100);
+
+    })
+
+    //contact
+    contactBtn.addEventListener('click', () => {
+        editContact.classList.remove('hidden');
+        bgContact.classList.remove('hidden');
+        setTimeout(() => {
+            editContact.classList.remove('scale-0');
+            editContact.classList.add('scale-100');
+        }, 10);
+    })
+    exitContact.addEventListener('click', () => {
+        setTimeout(() => {
+            editContact.classList.remove('scale-100');
+            editContact.classList.add('scale-0');
+            bgContact.classList.add('hidden');
+        }, 10);
+    })
+
+    //profilePicture
+    ppBtn.addEventListener('click', () => {
+        editPp.classList.remove('hidden');
+        bgPp.classList.remove('hidden');
+        setTimeout(() => {
+            editPp.classList.remove('scale-0');
+            editPp.classList.add('scale-100');
+        }, 10);
+    })
+    exitPp.addEventListener('click', () => {
+        setTimeout(() => {
+            editPp.classList.remove('scale-100');
+            editPp.classList.add('scale-0');
+            bgPp.classList.add('hidden');
+        }, 10);
+    })
+
+    //backgroundPic
+    bpBtn.addEventListener('click', () => {
+        editBp.classList.remove('hidden');
+        bgBp.classList.remove('hidden');
+        setTimeout(() => {
+            editBp.classList.remove('scale-0');
+            editBp.classList.add('scale-100');
+        }, 10);
+    })
+    exitBp.addEventListener('click', () => {
+        setTimeout(() => {
+            editBp.classList.remove('scale-100');
+            editBp.classList.add('scale-0');
+            bgBp.classList.add('hidden');
+        }, 10);
+    })
+
+    const imgInp = document.getElementById('imgInp');
+    const blah = document.getElementById('blah');
+    const imgInpB = document.getElementById('imgInpB');
+    const blahB = document.getElementById('blahB');
+
+    imgInp.onchange = evt => {
+        const [file] = imgInp.files
+        if (file) {
+            blah.src = URL.createObjectURL(file)
+        }
+    }
+    imgInpB.onchange = evt => {
+        const [file] = imgInpB.files
+        if (file) {
+            blahB.src = URL.createObjectURL(file)
+        }
+    }
+</script>
+<script src="https://kit.fontawesome.com/6730680f00.js" crossorigin="anonymous"></script>
+</body>
+</html>

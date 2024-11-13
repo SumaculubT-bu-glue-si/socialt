@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-gray-100">
+
+<header>
+    <div class="fixed overflow-hidden top-0 h-16 w-full bg-white shadow-md z-20">
+        <div class="w-3/4 py-2 flex justify-between items-center m-auto">
+            <div>
+                <i class="fa-solid fa-globe text-4xl pt-2 text-gray-800"></i>
+            </div>
+            <div class="mt-2 flex flex-row">
+                <a th:href="@{/home}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Home</a>
+                <a th:href="@{/profession}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Profession</a>
+                <a th:href="@{/events}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Events</a>
+                <a th:href="@{/contact}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">ContactUs</a>
+                <p class="font-bold text-md pointer-events-none mr-4">|</p>
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button type="submit" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" sec:authorize="isAuthenticated()" >Logout</button>
+                </form>
+
+                <a th:href="@{/admins}" class="mr-2 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" sec:authorize="hasAnyRole('SuperAdmin', 'Admin')">Accounts</a>
+                <a th:href="@{/profile}" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white"sec:authorize="isAuthenticated()">Profile</a>
+
+                <a th:href="@{/user/register}" sec:authorize="!isAuthenticated()" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" >Register</a>
+
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" >Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="dashboard fixed flex overflow-y-auto h-screen w-full">
+        <div class=" pt-16 w-1/5 text-gray-800 flex sticky top-0 overflow-hidden ml-48">
+            <div class="flex flex-col w-full">
+
+                <form th:action="@{/events/search}">
+                    <input name="query" type="search" aria-label="Search" id="input-box" class="py-2 px-2 w-3/4 ml-8 mb-6 bg-white rounded-3xl border border-gray-100 shadow-md mt-5 mr-2" placeholder="Search people">
+                </form>
+                <div class="result ml-10 pl-2 absolute h-fit w-40 bg-gray-900 mt-20 z-50 text-gray-100 text-md w-3/4 rounded-md shadow-md text"></div>
+
+                <a th:href="@{/events/filter(type=Project)}" class="py-4 pl-10 text-md transform hover:bg-gradient-to-r hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Project</a>
+                <a th:href="@{/events/filter(type=Professional)}" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Professional</a>
+                <a th:href="@{/events/filter(type=Business)}" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Business</a>
+                <a th:href="@{/events/filter(type=Celebration)}" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Celebration</a>
+                <a th:href="@{/events/filter(type=Other)}" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Other</a>
+                <div class="w-3/4 border border-gray-300 ml-8"></div>
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button sec:authorize="isAuthenticated()" class="py-4 text-left w-full pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Logout</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="py-4 pl-10 text-md transform hover:bg-gray-800 hover:text-gray-100 duration-300 font-semibold">Login</a>
+
+            </div>
+        </div>
+        <div class="content inline-block bg-gray-100 w-2/4 mx-auto mt-20">
+            <div class="flex justify-between mx-8 mb-10">
+                <a th:href="@{/events}" class="my-auto cursor-pointer py-3 px-4 transform hover:bg-gray-300 rounded-full duration-300">
+                    <i class="fa-solid fa-arrow-left font-semibold text-gray-800"></i>
+                </a>
+                <h1 class="text-2xl font-semibold text-gray-800">Events</h1>
+            </div>
+            <div th:each="postDto:${postDto}">
+                <div class="bg-white w-11/12 h-fit mb-8 mx-auto rounded-2xl shadow-md p-8">
+                    <h1 th:text="${postDto.title}" class="text-gray-800 font-semibold text-xl"></h1>
+                    <p class="text-xs text-gray-600 mb-2" th:text="${postDto.createAt}"></p>
+                    <p th:text="${postDto.description}" class="text-gray-800"></p>
+                    <p th:text="'Category: ' + ${postDto.type}" class="text-gray-600 font-semibold pt-4 text-sm"></p>
+                    <div class="h-96 w-full bg-gray-300 rounded-lg my-4 text-center">
+                        <img class="h-full m-auto w-auto" th:src="@{'data:image/jpeg;base64,'+${postDto.getImageDataBase64()}}"/>
+                    </div>
+                    <div class="flex flex-row justify-between w-1/3 text-gray-700">
+                        <div class="flex flex-row transform hover:bg-gray-200 px-4 py-2 rounded-md">
+                            <p th:text="${postDto.likes}" class="mr-1 font-semibold my-auto text-md"></p>
+                            <i class="fa-regular fa-thumbs-up pt-1 pr-1"></i>
+                            <p class="pointer-events-none">Like</p>
+                        </div>
+                        <div class="flex flex-row transform hover:bg-gray-200 px-4 py-2 rounded-md">
+                            <p th:text="${postDto.comments}" class="mr-1 font-semibold my-auto text-md"></p>
+                            <i class="fa-regular fa-comment pt-1 pr-1"></i>
+                            <p class="pointer-events-none">Comment</p>
+                        </div>
+                        <div class="flex flex-row transform hover:bg-gray-200 px-4 py-2 rounded-md">
+                            <p th:text="${postDto.shares}" class="mr-1 font-semibold my-auto text-md"></p>
+                            <i class="fa-solid fa-share pt-1 pr-1"></i>
+                            <p class="pointer-events-none">Share</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-20 w-full text-center text-gray-400">
+                <p>- End of Content -</p>
+            </div>
+        </div>
+        <div class="w-1/4 flex flex-col gap-8 h-full sticky top-0 overflow-hidden pt-24 mr-36">
+            <div class="bg-white w-9/12 h-96 rounded-xl shadow-md text-right ">
+                <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                    <a href="#">
+                        <img class="rounded-t-lg" src="https://flowbite.com/docs/images/blog/image-1.jpg" alt="" />
+                    </a>
+                    <div class="p-5">
+                        <a href="#">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
+                        </a>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="bg-white w-9/12 h-96 rounded-xl shadow-md text-right ">
+                <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                    <a href="#">
+                        <img class="p-8 rounded-t-lg" src="https://flowbite.com/docs/images/products/apple-watch.png" alt="product image" />
+                    </a>
+                    <div class="px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Apple Watch Series 7 GPS, Aluminium Case, Starlight Sport</h5>
+                        </a>
+                        <div class="flex items-center mt-2.5 mb-5">
+                            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                                <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                </svg>
+                                <svg class="w-4 h-4 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                </svg>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">5.0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl font-bold text-gray-900 dark:text-white">$599</span>
+                            <a target="_blank" href="https://www.amazon.com/Apple-Watch-Starlight-Aluminum-Regular/dp/B09PDZYL6F" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+<script th:inline="javascript">
+    const list = /*[[${list}]]*/ '[]';
+    const parsedList = JSON.parse(list);
+    console.log("parsedList: ", parsedList);
+
+    for (let i in parsedList) {
+        console.log("name: " + parsedList[i]);
+    }
+
+    const resultBox = document.querySelector(".result");
+    const inputBox = document.getElementById("input-box");
+
+    inputBox.onkeyup = function () {
+        let results = [];
+        let input = inputBox.value;
+        if (input.length && parsedList) {
+            results = parsedList.filter((name) => {
+                return name.toLowerCase().includes(input.toLowerCase());
+            });
+            console.log(results);
+        }
+        display(results);
+    };
+    function display(result) {
+        const content = result.map((name) => {
+            return "<br><a href='/user/user?email=" + name + "'>" + name + "</a><br><br>";
+        }).join('');
+        resultBox.innerHTML = content;
+    }
+</script>
+
+<script src="https://kit.fontawesome.com/6730680f00.js" crossorigin="anonymous"></script>
+</body>
+</html>

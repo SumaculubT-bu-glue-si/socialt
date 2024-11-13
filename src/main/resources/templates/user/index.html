@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admins</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<header>
+    <div class="h-16 w-full bg-white shadow-md absolute ">
+        <div class="w-3/4 py-2 flex justify-between items-center m-auto">
+            <div>
+                <i class="fa-solid fa-globe text-4xl pt-2 text-gray-800"></i>
+            </div>
+            <div class="mt-2 flex flex-row">
+                <a th:href="@{/home}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Home</a>
+                <a th:href="@{/profession}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Profession</a>
+                <a th:href="@{/events}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">Events</a>
+                <a th:href="@{/contact}" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer ">ContactUs</a>
+                <p class="font-bold text-md pointer-events-none mr-4">|</p>
+
+                <form th:action="@{/logout}" method="post" onsubmit="return confirm('Are you sure you want to logout?')">
+                    <button type="submit" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" sec:authorize="isAuthenticated()" >Logout</button>
+                </form>
+
+                <a th:href="@{/admins}" class="mr-2 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" sec:authorize="isAuthenticated()">Accounts</a>
+                <a th:href="@{/profile}" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" >Profile</a>
+                <a th:href="@{/user/register}" sec:authorize="!isAuthenticated()" class="mr-4 no-underline text-black font-semibold hover:text-red-700 duration-500 cursor-pointer" >Register</a>
+
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="mr-4 -mt-2 no-underline px-6 py-2 text-white font-semibold duration-500 cursor-pointer border border-yellow-600 bg-yellow-600 rounded-lg hover:text-yellow-800 hover:bg-white" >Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+    <main>
+        <section class="h-3/4 mx-auto w-4/5 pt-28">
+            <div class="flex justify-between mb-8">
+                <h1 class="text-5xl font-semibold text-gray-900">Admin List</h1>
+                <a sec:authorize="hasRole('SuperAdmin')" class="self-end border border-blue-900 px-6 py-2 font-semibold rounded-lg bg-blue-800 text-white hover:text-blue-800 hover:bg-white duration-500" th:href="@{/admins/create}">Create New Admin</a>
+            </div>
+
+            <div class="text-center bg-white rounded-lg p-10 border shadow-xl">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th sec:authorize="hasRole('SuperAdmin')">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="admins : ${admins}" class="w-full">
+                            <td th:text="${admins.name}"></td>
+                            <td th:text="${admins.email}"></td>
+                            <td>**********</td>
+<!--                            <td th:text="${user.password}"></td>-->
+                            <td th:text="${admins.address}"></td>
+                            <td th:text="${admins.contactNumber}"></td>
+                            <td class="py-4" sec:authorize="hasRole('SuperAdmin')">
+                                <a class="border px-6 py-2 border-green-900 font-semibold rounded-lg bg-green-700 text-white hover:text-green-800 hover:bg-white duration-500" id="editbtn"
+                                    th:href="@{/admins/edit(id=${admins.id})}">Edit</a>
+                                <a class="border px-6 py-2 border-red-900 font-semibold rounded-lg bg-red-700 text-white hover:text-red-800 hover:bg-white duration-500"
+                                    th:href="@{/admins/delete(id=${admins.id})}"
+                                    onclick="return confirm('Are you sure you yan to delete id?')">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+<!--        Blog Lists-->
+        <section class="h-3/4 mx-auto w-4/5 pt-28">
+            <div class="flex justify-between mb-8">
+                <h1 class="text-5xl font-semibold text-gray-900">Blog List</h1>
+                <a class="self-end border border-blue-900 px-6 py-2 font-semibold rounded-lg bg-blue-800 text-white hover:text-blue-800 hover:bg-white duration-500" th:href="@{/admins/blog/create}">Create New Blog</a>
+            </div>
+            <div class="text-center bg-white rounded-lg p-10 mb-20 border shadow-xl">
+                <table class="w-full">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Image Path</th>
+                        <th>Modified At</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="posts:${posts}" class="w-full text-center max-h-10" >
+                        <td class="max-w-xs" th:text="${posts.title}"></td>
+                        <td class="max-w-sm" th:text="${#strings.abbreviate(posts.description,150)}"></td>
+                        <td>
+                            <img class="m-auto h-20" th:src="@{'data:image/jpeg;base64,'+${posts.getImageDataBase64()}}" alt="images from database"/>
+                        </td>
+                        <td th:text="${posts.createAt}"></td>
+                        <td class="py-4">
+                            <a class="border px-6 py-2 border-green-900 font-semibold rounded-lg bg-green-700 text-white hover:text-green-800 hover:bg-white duration-500" id="editblogbtn"
+                               th:href="@{/admins/blog/edit(id=${posts.id})}">Edit</a>
+                            <a class="border px-6 py-2 border-red-900 font-semibold rounded-lg bg-red-700 text-white hover:text-red-800 hover:bg-white duration-500"
+                               th:href="@{/admins/blog/delete(id=${posts.id})}"
+                               onclick="return confirm('Are you sure you yan to delete id?')">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+<footer>
+
+</footer>
+<script src="https://kit.fontawesome.com/6730680f00.js" crossorigin="anonymous"></script>
+</body>
+</html>
